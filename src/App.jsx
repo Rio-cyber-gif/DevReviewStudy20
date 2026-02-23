@@ -36,14 +36,11 @@ function App() {
   if (!missions || missions.length === 0) return null;
   const currentMission = missions.find(m => m.id === currentMissionId);
 
-  // 💡 【追加】初回アクセス時に自動でチュートリアルを表示する
   useEffect(() => {
     const hasSeenTutorial = localStorage.getItem('devreviewstudy20_tutorial_seen');
     if (!hasSeenTutorial) {
-      // 少しだけ遅延させて表示（アニメーションの安定化のため）
       const timer = setTimeout(() => {
         setShowTutorial(true);
-        // localStorage.setItem('devreviewstudy20_tutorial_seen', 'true'); // 二回目以降表示させない場合はここを有効化
       }, 800);
       return () => clearTimeout(timer);
     }
@@ -60,8 +57,6 @@ function App() {
     setAccuracy(100);
   }, [currentMissionId, completedMissions]);
 
-  // ✅ handleGoHome を削除（不要になったため）
-
   const handleReset = () => {
     setIsResetting(true);
     setTimeout(() => {
@@ -75,7 +70,6 @@ function App() {
       setShowCertificate(false);
       localStorage.removeItem('devreviewstudy20_completed');
       localStorage.removeItem('devreviewstudy20_score');
-      // リセット時はチュートリアルフラグも消す
       localStorage.removeItem('devreviewstudy20_tutorial_seen');
       setTimeout(() => setIsResetting(false), 1500);
     }, 800);
@@ -87,6 +81,7 @@ function App() {
     setIsRevealed(false);
   };
 
+  // ✅ 自力正解時のみクリアリストに追加し、スコアを加算する
   const handleVerificationSuccess = () => {
     setIsVerified(true);
     setIsRevealed(false);
@@ -97,13 +92,11 @@ function App() {
     }
   };
 
+  // ✅ 【修正】答えを見た時は表示を変えるだけで、クリア扱いにしない
   const handleReveal = () => {
     setIsVerified(true);
     setIsRevealed(true);
-    if (!completedMissions.includes(currentMissionId)) {
-      const newCompleted = [...completedMissions, currentMissionId];
-      setCompletedMissions(newCompleted);
-    }
+    // setCompletedMissions(newCompleted) を削除しました
   };
 
   const handleVerificationFailure = (penalty) => {
@@ -129,10 +122,16 @@ function App() {
     <div className="flex h-screen w-full bg-slate-900 text-slate-200 overflow-hidden relative font-sans">
       <BackgroundEffect />
 
+      {/* ✅ 認定証へのデータ連動 */}
       {showCertificate && (
         <CertificateScreen
-        points={score} 
-        completedCount={completedMissions.length} 
+          points={score} 
+          rank={
+            score >= 2000 ? "S" : 
+            score >= 1000 ? "A" : 
+            score >= 500 ? "B" : "C"
+          }
+          completedCount={completedMissions.length} 
           onBackToDashboard={handleBackFromCertificate}
         />
       )}
@@ -142,7 +141,6 @@ function App() {
         currentMissionId={currentMissionId}
         completedMissions={completedMissions}
         onSelectMission={handleSelectMission}
-        // ✅ onGoHome を削除
         onReset={handleReset}
         onOpenTutorial={() => setShowTutorial(true)}
         onOpenTerms={() => setShowTerms(true)}
@@ -161,7 +159,6 @@ function App() {
             <button
               onClick={() => setShowTutorial(true)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 border border-slate-700/50 hover:border-indigo-500/30 transition-all cursor-pointer"
-              title="使い方ガイド"
             >
               <HelpCircle className="w-4 h-4" />
               使い方
@@ -201,10 +198,8 @@ function App() {
         </div>
       </main>
 
-      {/* モーダル群 */}
       <TutorialModal isOpen={showTutorial} onClose={() => {
         setShowTutorial(false);
-        // 閉じたタイミングで「既読」として保存
         localStorage.setItem('devreviewstudy20_tutorial_seen', 'true');
       }} />
       <TermsModal isOpen={showTerms} onClose={() => setShowTerms(false)} />
