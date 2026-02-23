@@ -36,6 +36,19 @@ function App() {
   if (!missions || missions.length === 0) return null;
   const currentMission = missions.find(m => m.id === currentMissionId);
 
+  // 💡 【追加】初回アクセス時に自動でチュートリアルを表示する
+  useEffect(() => {
+    const hasSeenTutorial = localStorage.getItem('devreviewstudy20_tutorial_seen');
+    if (!hasSeenTutorial) {
+      // 少しだけ遅延させて表示（アニメーションの安定化のため）
+      const timer = setTimeout(() => {
+        setShowTutorial(true);
+        // localStorage.setItem('devreviewstudy20_tutorial_seen', 'true'); // 二回目以降表示させない場合はここを有効化
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('devreviewstudy20_completed', JSON.stringify(completedMissions));
     localStorage.setItem('devreviewstudy20_score', score.toString());
@@ -67,6 +80,8 @@ function App() {
       setShowCertificate(false);
       localStorage.removeItem('devreviewstudy20_completed');
       localStorage.removeItem('devreviewstudy20_score');
+      // リセット時はチュートリアルフラグも消す
+      localStorage.removeItem('devreviewstudy20_tutorial_seen');
       setTimeout(() => setIsResetting(false), 1500);
     }, 800);
   };
@@ -103,7 +118,6 @@ function App() {
   };
 
   const handleNextMission = () => {
-    // 最終問題の場合は賞状を表示
     if (currentMissionId === missions.length) {
       setShowCertificate(true);
     } else {
@@ -120,7 +134,6 @@ function App() {
     <div className="flex h-screen w-full bg-slate-900 text-slate-200 overflow-hidden relative font-sans">
       <BackgroundEffect />
 
-      {/* 賞状画面 */}
       {showCertificate && (
         <CertificateScreen
           onBackToDashboard={handleBackFromCertificate}
@@ -183,7 +196,12 @@ function App() {
         </div>
       </main>
 
-      <TutorialModal isOpen={showTutorial} onClose={() => setShowTutorial(false)} />
+      {/* モーダル群 */}
+      <TutorialModal isOpen={showTutorial} onClose={() => {
+        setShowTutorial(false);
+        // 閉じたタイミングで「既読」として保存
+        localStorage.setItem('devreviewstudy20_tutorial_seen', 'true');
+      }} />
       <TermsModal isOpen={showTerms} onClose={() => setShowTerms(false)} />
       <PrivacyModal isOpen={showPrivacy} onClose={() => setShowPrivacy(false)} />
     </div>

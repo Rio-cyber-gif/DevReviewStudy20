@@ -15,3 +15,9 @@
 - **Frontend**: React (Vite)
 - **Styling**: Tailwind CSS / Framer Motion
 - **Design Philosophy**: 読みやすく、メンテナンスしやすいコード設計の追求
+
+## 🤝 Credits & AI Collaboration
+本アプリの演習問題および解説は、AI（Google Gemini）との共創によって制作されました。
+
+- **問題の構成**: ソフトウェア設計のベストプラクティスに基づき、AIがシナリオを生成。
+- **今後の展望**: 本アプリは学習コンセプトの提示を主眼としています。各問題の論理検証ロジックについては、今後さらに厳密なテストと改善を継続していく予定です。
