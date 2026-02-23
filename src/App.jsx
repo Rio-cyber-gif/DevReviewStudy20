@@ -131,6 +131,8 @@ function App() {
 
       {showCertificate && (
         <CertificateScreen
+        points={score} 
+        completedCount={completedMissions.length} 
           onBackToDashboard={handleBackFromCertificate}
         />
       )}
