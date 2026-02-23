@@ -47,12 +47,7 @@ function App() {
     setAccuracy(100);
   }, [currentMissionId, completedMissions]);
 
-  const handleGoHome = () => {
-    setCurrentMissionId(1);
-    setIsAnalyzing(false);
-    setIsRevealed(false);
-    setShowCertificate(false);
-  };
+  // ✅ handleGoHome を削除（不要になったため）
 
   const handleReset = () => {
     setIsResetting(true);
@@ -103,7 +98,6 @@ function App() {
   };
 
   const handleNextMission = () => {
-    // 最終問題の場合は賞状を表示
     if (currentMissionId === missions.length) {
       setShowCertificate(true);
     } else {
@@ -120,7 +114,6 @@ function App() {
     <div className="flex h-screen w-full bg-slate-900 text-slate-200 overflow-hidden relative font-sans">
       <BackgroundEffect />
 
-      {/* 賞状画面 */}
       {showCertificate && (
         <CertificateScreen
           onBackToDashboard={handleBackFromCertificate}
@@ -132,7 +125,7 @@ function App() {
         currentMissionId={currentMissionId}
         completedMissions={completedMissions}
         onSelectMission={handleSelectMission}
-        onGoHome={handleGoHome}
+        // ✅ onGoHome を削除
         onReset={handleReset}
         onOpenTutorial={() => setShowTutorial(true)}
         onOpenTerms={() => setShowTerms(true)}
@@ -143,8 +136,8 @@ function App() {
         <header className="h-20 border-b border-slate-700/50 bg-slate-900/60 backdrop-blur-md flex items-center justify-between px-8 shrink-0">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-              <span className="text-indigo-400">演習 {String(currentMissionId).padStart(2, '0')}:</span>
-              {currentMission?.title}
+              <span className="text-indigo-400">ステップ {String(currentMissionId).padStart(2, '0')}:</span>
+              {currentMission?.title.replace(/^(演習|ステップ|習)\s*\d*\s*[:：]*/, '')}
             </h1>
           </div>
           <div className="flex items-center gap-5 shrink-0">
@@ -178,7 +171,15 @@ function App() {
           </div>
 
           <div className="flex flex-col gap-6 h-full relative pointer-events-none">
-            <LogicVisual isVerified={isVerified} isRevealed={isRevealed} isResetting={isResetting} isAnalyzing={isAnalyzing} isError={isError} level={accuracy} currentMission={currentMission} />
+            <LogicVisual 
+              isVerified={isVerified} 
+              isRevealed={isRevealed} 
+              isResetting={isResetting} 
+              isAnalyzing={isAnalyzing} 
+              isError={isError} 
+              level={accuracy} 
+              currentMission={currentMission} 
+            />
           </div>
         </div>
       </main>
