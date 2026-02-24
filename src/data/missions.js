@@ -189,13 +189,13 @@ export const missions = [
     {
         id: 18,
         title: "メソッドの長さ",
-        objective: "一つのメソッドに処理を詰め込みすぎです。小さな単位に分けてください。",
-        hint: "通知処理を notify_user という別のメソッドに切り出しましょう。",
+        objective: "一つのメソッドに処理を詰め込みすぎです。役割ごとにメソッドを分割して、見通しを良くしましょう。",
+        hint: "以下の手順で進めてみてください：\n1. 通知処理（putsの部分）を切り出した 'def notify_user(user)...end' を新しく作成する\n2. 'save_and_notify' の中から、1で作ったメソッドを呼び出す形に書き換える",
         code: "def save_and_notify(user)\n  user.save\n  puts \"Sending email...\"\n  puts \"Done.\"\nend",
         correctCode: "def notify_user(user)\n  puts \"Sending email...\"\n  puts \"Done.\"\nend\ndef save_and_notify(user)\n  user.save\n  notify_user(user)\nend",
-        keywords: ["notify_user(user)"],
+        keywords: ["def notify_user", "notify_user"],
         removeKeywords: [],
-        explanation: "一つの関数が持つ役割を最小限に絞る（単一責任の原則）ことで、コードの再利用性が高まり、テストが容易になります。小さな部品を組み合わせる構造にすることで、全体の複雑さを抑え、将来の変更に柔軟に対応できる設計になります。"
+        explanation: "メソッドを短く保つことは、読みやすさと再利用性の向上に直結します。通知処理を独立させたことで、将来「保存はせずに通知だけしたい」という場合にも、この部品を使い回せるようになります。"
     },
     {
         id: 19,
