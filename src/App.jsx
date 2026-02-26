@@ -52,6 +52,7 @@ function App() {
   }, [completedMissions, score]);
 
   useEffect(() => {
+    // ミッション切り替え時の初期化
     setIsVerified(completedMissions.includes(currentMissionId));
     setIsRevealed(false);
     setAccuracy(100);
@@ -81,7 +82,7 @@ function App() {
     setIsRevealed(false);
   };
 
-  // ✅ 自力正解時のみクリアリストに追加し、スコアを加算する
+  // ✅ 正解時：即座にクリアリストを更新して、サイドバーを緑に光らせる
   const handleVerificationSuccess = () => {
     setIsVerified(true);
     setIsRevealed(false);
@@ -90,13 +91,13 @@ function App() {
       setCompletedMissions(newCompleted);
       setScore(prev => prev + (currentMission?.rewardYen || 100));
     }
+    // ここで setTimeout を使って handleNextMission() を自動で呼ぶことも可能ですが、
+    // EditorView側で「次へ」ボタンを表示させるのが最も自然です。
   };
 
-  // ✅ 【修正】答えを見た時は表示を変えるだけで、クリア扱いにしない
   const handleReveal = () => {
     setIsVerified(true);
     setIsRevealed(true);
-    // setCompletedMissions(newCompleted) を削除しました
   };
 
   const handleVerificationFailure = (penalty) => {
@@ -122,15 +123,10 @@ function App() {
     <div className="flex h-screen w-full bg-slate-900 text-slate-200 overflow-hidden relative font-sans">
       <BackgroundEffect />
 
-      {/* ✅ 認定証へのデータ連動 */}
       {showCertificate && (
         <CertificateScreen
           points={score} 
-          rank={
-            score >= 2000 ? "S" : 
-            score >= 1000 ? "A" : 
-            score >= 500 ? "B" : "C"
-          }
+          rank={score >= 2000 ? "S" : score >= 1000 ? "A" : score >= 500 ? "B" : "C"}
           completedCount={completedMissions.length} 
           onBackToDashboard={handleBackFromCertificate}
         />
@@ -151,17 +147,17 @@ function App() {
         <header className="h-20 border-b border-slate-700/50 bg-slate-900/60 backdrop-blur-md flex items-center justify-between px-8 shrink-0">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-3">
-              <span className="text-indigo-400">ステップ {String(currentMissionId).padStart(2, '0')}:</span>
+              <span className="text-indigo-400 font-mono">STEP {String(currentMissionId).padStart(2, '0')}:</span>
               {currentMission?.title.replace(/^(演習|ステップ|習)\s*\d*\s*[:：]*/, '')}
             </h1>
           </div>
           <div className="flex items-center gap-5 shrink-0">
             <button
               onClick={() => setShowTutorial(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 border border-slate-700/50 hover:border-indigo-500/30 transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10 border border-slate-700/50 transition-all cursor-pointer"
             >
               <HelpCircle className="w-4 h-4" />
-              使い方
+              ガイド
             </button>
             <ScoreBoard score={score} accuracy={accuracy} isVerified={isVerified} />
           </div>
