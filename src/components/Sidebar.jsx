@@ -7,7 +7,7 @@ const Sidebar = ({ missions, currentMissionId, completedMissions, onSelectMissio
     // ✅ 重要：一度でも到達した「最高記録」を保持するステート
     const [achievedMaxId, setAchievedMaxId] = useState(1);
 
-    // currentMissionId や completedMissions が更新されるたびに、最高到達地点を更新する
+    // currentMissionId や completedMissions が更新されるたびに、最高到達地点を更新
     useEffect(() => {
         const currentMax = completedMissions.length > 0 ? Math.max(...completedMissions) : 0;
         const currentSafe = typeof currentMissionId === 'number' ? currentMissionId : 0;
@@ -19,7 +19,18 @@ const Sidebar = ({ missions, currentMissionId, completedMissions, onSelectMissio
     // --- 遊び心機能（そのまま維持） ---
     const [messageIndex, setMessageIndex] = useState(0);
     const [showMessage, setShowMessage] = useState(false);
-    const systemMessages = ["システムは正常に稼働しています。", "検証プロトコルの準備が整いました。", "新しいロジックを読み込み中です...", "論理的な整合性を確認しています。", "コア・システム、待機中。", "現在の進捗を同期しています...", "未解決の条件分岐を探索しています。", "一時的なメモリを最適化しました。", "セッションの安定性を維持しています。", "検証ラボへようこそ。解析を始めましょう。"];
+    const systemMessages = [
+        "システムは正常に稼働しています。",
+        "検証プロトコルの準備が整いました。",
+        "新しいロジックを読み込み中です...",
+        "論理的な整合性を確認しています。",
+        "コア・システム、待機中。",
+        "現在の進捗を同期しています...",
+        "未解決の条件分岐を探索しています。",
+        "一時的なメモリを最適化しました。",
+        "セッションの安定性を維持しています。",
+        "検証ラボへようこそ。解析を始めましょう。"
+    ];
 
     const handleLogoClick = () => {
         setMessageIndex((prev) => (prev + 1) % systemMessages.length);
@@ -41,6 +52,7 @@ const Sidebar = ({ missions, currentMissionId, completedMissions, onSelectMissio
 
     return (
         <>
+            {/* リセット確認ダイアログ */}
             {showResetConfirm && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
                     <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm" onClick={() => setShowResetConfirm(false)} />
@@ -79,7 +91,7 @@ const Sidebar = ({ missions, currentMissionId, completedMissions, onSelectMissio
                         const isCompleted = completedMissions.includes(mission.id);
                         const isActive = currentMissionId === mission.id;
                         
-                        // ✅ 一度でも到達した最高地点 (achievedMaxId) を超えるものだけをロック
+                        // ✅ ロック条件：最高到達地点より先の問題のみロック
                         const isLocked = mission.id > achievedMaxId;
 
                         return (
@@ -119,10 +131,16 @@ const Sidebar = ({ missions, currentMissionId, completedMissions, onSelectMissio
                     })}
                 </div>
 
+                {/* ✅ フッターセクションを復元 */}
                 <div className="p-4 border-t border-slate-800 bg-slate-900/80 flex flex-col gap-3 relative z-30">
                     <button onClick={(e) => { e.stopPropagation(); setShowResetConfirm(true); }} className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs font-bold text-red-400 hover:text-red-300 border border-red-500/30 hover:border-red-500/50 hover:bg-red-500/10 transition-all cursor-pointer pointer-events-auto">
                         <RotateCcw className="w-3.5 h-3.5" />進捗をリセット
                     </button>
+                    <div className="text-[10px] text-center text-slate-500 tracking-widest font-black uppercase">Logic Verification - Online</div>
+                    <div className="flex justify-center gap-4 text-xs font-sans tracking-normal font-normal text-slate-500">
+                        <button onClick={(e) => { e.stopPropagation(); onOpenTerms(); }} className="hover:text-white transition-colors cursor-pointer pointer-events-auto text-slate-500">利用規約</button>
+                        <button onClick={(e) => { e.stopPropagation(); onOpenPrivacy(); }} className="hover:text-white transition-colors cursor-pointer pointer-events-auto text-slate-500">プライバシーポリシー</button>
+                    </div>
                 </div>
             </aside>
         </>
